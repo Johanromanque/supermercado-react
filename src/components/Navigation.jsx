@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, NavLink } from "react-router";
 
@@ -20,15 +19,13 @@ function Navigation() {
       aria-label="Navegación principal"
     >
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-4">
-
         {/* Nombre del supermercado */}
         <Link
           to="/"
           onClick={cerrarMenu}
           className="brand-font text-lg sm:text-xl"
         >
-          Supermercado{" "}
-          <span className="text-amber-300">Mi Mercado</span>
+          Supermercado <span className="text-amber-300">Mi Mercado</span>
         </Link>
 
         {/* Botón del menú para celulares */}
@@ -40,9 +37,7 @@ function Navigation() {
           aria-controls="menu-principal"
           aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"}
         >
-          <span aria-hidden="true">
-            {menuAbierto ? "✕" : "☰"}
-          </span>
+          <span aria-hidden="true">{menuAbierto ? "✕" : "☰"}</span>
         </button>
 
         {/* Enlaces de navegación */}
@@ -52,12 +47,7 @@ function Navigation() {
         >
           <ul className="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-3">
             <li>
-              <NavLink
-                to="/"
-                end
-                className={navLinkClass}
-                onClick={cerrarMenu}
-              >
+              <NavLink to="/" end className={navLinkClass} onClick={cerrarMenu}>
                 Inicio
               </NavLink>
             </li>
@@ -79,6 +69,25 @@ function Navigation() {
                 onClick={cerrarMenu}
               >
                 Quiénes Somos
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/inventario"
+                className={navLinkClass}
+                onClick={cerrarMenu}
+              >
+                Inventario
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink
+                to="/agregar-producto"
+                className={navLinkClass}
+                onClick={cerrarMenu}
+              >
+                Agregar Producto
               </NavLink>
             </li>
           </ul>

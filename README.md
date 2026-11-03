@@ -1,66 +1,74 @@
+
 # Supermercado React — Mi Mercado
 
-Proyecto académico de **Desarrollo Frontend II (PFY2202), Bimestre 9**. Aplicación SPA (Single Page Application) de gestión de inventario de un supermercado, desarrollada con React, React Router y Bootstrap.
+Proyecto académico desarrollado para la asignatura
+Desarrollo Frontend II (PFY2202) de Duoc UC.
 
-## Funcionalidades
-
-- **Inicio (`/`):** banner de bienvenida y tabla con cuatro productos de ejemplo, categoría, stock y precio.
-- **Nuestras Tiendas (`/tiendas`):** tres sucursales de ejemplo, sus direcciones y horarios.
-- **Quiénes Somos (`/quienes-somos`):** presentación, misión y visión del supermercado.
-- **Navegación:** React Router sin recarga completa; `NavLink` distingue la sección activa.
-- **Página no encontrada (`*`):** mensaje 404 y enlace de regreso a Inicio.
-- **Diseño adaptable:** componentes de Bootstrap 5 y estilos CSS personalizados.
-
-> **Alcance actual:** los productos y las tiendas son datos locales de demostración. Los botones **Agregar Producto**, **Editar**, **Eliminar** y **Ver Ubicación** son visuales: sus funcionalidades se implementarán en futuras actividades.
+Aplicación SPA para la gestión de inventario de un
+supermercado, desarrollada con React, React Router
+y Tailwind CSS.
 
 ## Tecnologías utilizadas
 
-React 19 · React Router 7 · Vite 8 · JavaScript · HTML · CSS · Bootstrap 5 · Git y GitHub.
+- React 19
+- Vite 8
+- React Router 7
+- Tailwind CSS 4
+- JavaScript, HTML y CSS
+- Git y GitHub
 
-## Instalación y ejecución
+## Semana 1 — Navegación SPA
 
-Necesitas Node.js compatible con Vite 8 (Node.js 20.19+ o 22.12+; se recomienda una versión LTS actual) y npm.
+- Configuración de React Router.
+- Página principal del supermercado.
+- Página Nuestras Tiendas.
+- Página Quiénes Somos.
+- Componentes reutilizables.
+- Navegación responsive.
+- Página 404 para rutas inexistentes.
 
-```bash
-git clone https://github.com/Johanromanque/supermercado-react.git
-cd supermercado-react
-npm install
-npm run dev
-```
+## Semana 2 — Gestión de estados
 
-Abre la dirección local que muestra Vite. Para verificar el código y generar la versión de producción:
+- Migración de Bootstrap a Tailwind CSS 4.
+- Implementación de Context API.
+- Estado global mediante useState.
+- Hook personalizado useInventario.
+- Formulario para registrar productos.
+- Validación de campos obligatorios.
+- Validación de stock y precio.
+- Tabla dinámica de inventario.
+- Actualización automática de productos
+  entre las distintas páginas.
 
-```bash
-npm run lint
-npm run build
-```
+## Ejecutar el proyecto
 
-## Estructura principal
+1. Clonar el repositorio:
 
-```text
-src/
-├── components/
-│   ├── Navigation.jsx
-│   ├── Footer.jsx
-│   ├── HeroCard.jsx
-│   ├── ProductTable.jsx
-│   └── ProductRow.jsx
-├── data/
-│   ├── productos.js
-│   └── tiendas.js
-├── pages/
-│   ├── Home.jsx
-│   ├── NuestrasTiendas.jsx
-│   ├── QuienesSomos.jsx
-│   └── NotFound.jsx
-├── App.jsx
-├── main.jsx
-└── index.css
-```
+   git clone https://github.com/Johanromanque/supermercado-react.git
 
-## Evolución del proyecto
+2. Instalar dependencias:
 
-- **Semana 1:** SPA inicial de tres páginas con React Router, inventario, sucursales y presentación.
-- **Mejoras posteriores a la retroalimentación:** dependencia única de React Router, Bootstrap cargado desde npm, datos separados, componentes reutilizables, `NavLink` y ruta 404.
+   npm install
 
-El proyecto continuará ampliándose en las siguientes actividades del bimestre.
+3. Iniciar el servidor:
+
+   npm run dev
+
+4. Abrir la dirección local indicada por Vite.
+
+## Verificaciones
+
+- npm run lint
+- npm run build
+
+## Consideraciones
+
+Los productos se almacenan en memoria utilizando
+React Context y useState.
+
+Los productos agregados se mantienen al navegar
+entre páginas, pero se reinician al recargar
+el navegador.
+
+Las acciones de editar y eliminar productos
+todavía no están implementadas.

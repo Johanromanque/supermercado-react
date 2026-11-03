@@ -1,14 +1,18 @@
+
 import HeroCard from "../components/HeroCard";
 import ProductTable from "../components/ProductTable";
-import { productos } from "../data/productos";
+import useInventario from "../hooks/useInventario";
 
 function Home() {
+  const { productos } = useInventario();
+
   return (
-    <div className="container mt-4 mb-5 pb-5">
+    <section className="mx-auto w-full max-w-7xl px-4 pt-8 pb-12">
       <HeroCard />
       <ProductTable productos={productos} />
-    </div>
+    </section>
   );
 }
 
 export default Home;
+

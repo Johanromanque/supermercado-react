@@ -9,9 +9,9 @@ import NotFound from "./pages/NotFound";
 function App() {
   return (
     <BrowserRouter>
-      <div className="d-flex flex-column min-vh-100 w-100">
+      <div className="flex min-h-screen w-full flex-col">
         <Navigation />
-        <main className="flex-grow-1">
+        <main className="flex-1">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/tiendas" element={<NuestrasTiendas />} />

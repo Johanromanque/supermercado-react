@@ -1,4 +1,3 @@
-// src/pages/Inventario.jsx
 import ProductTable from "../components/ProductTable";
 import useInventario from "../hooks/useInventario";
 

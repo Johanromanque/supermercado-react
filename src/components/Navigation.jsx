@@ -1,8 +1,13 @@
+// src/components/Navigation.jsx
 import { useState } from "react";
 import { Link, NavLink } from "react-router";
+import useInventario from "../hooks/useInventario";
 
 function Navigation() {
   const [menuAbierto, setMenuAbierto] = useState(false);
+  const { carrito } = useInventario();
+
+  const totalEnCarrito = carrito.reduce((sum, item) => sum + item.cantidad, 0);
 
   const cerrarMenu = () => setMenuAbierto(false);
 
@@ -14,21 +19,12 @@ function Navigation() {
     }`;
 
   return (
-    <nav
-      className="bg-[#1e3a8a] text-white shadow-md"
-      aria-label="Navegación principal"
-    >
+    <nav className="bg-[#1e3a8a] text-white shadow-md" aria-label="Navegación principal">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-4">
-        {/* Nombre del supermercado */}
-        <Link
-          to="/"
-          onClick={cerrarMenu}
-          className="brand-font text-lg sm:text-xl"
-        >
+        <Link to="/" onClick={cerrarMenu} className="brand-font text-lg sm:text-xl">
           Supermercado <span className="text-amber-300">Mi Mercado</span>
         </Link>
 
-        {/* Botón del menú para celulares */}
         <button
           type="button"
           className="rounded-lg border border-white/40 px-3 py-2 text-white hover:bg-blue-800 lg:hidden"
@@ -40,7 +36,6 @@ function Navigation() {
           <span aria-hidden="true">{menuAbierto ? "✕" : "☰"}</span>
         </button>
 
-        {/* Enlaces de navegación */}
         <div
           id="menu-principal"
           className={`${menuAbierto ? "block" : "hidden"} w-full lg:block lg:w-auto`}
@@ -51,43 +46,44 @@ function Navigation() {
                 Inicio
               </NavLink>
             </li>
-
             <li>
-              <NavLink
-                to="/tiendas"
-                className={navLinkClass}
-                onClick={cerrarMenu}
-              >
+              <NavLink to="/inventario" className={navLinkClass} onClick={cerrarMenu}>
+                Inventario
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/agregar-producto" className={navLinkClass} onClick={cerrarMenu}>
+                Agregar Producto
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/tiendas" className={navLinkClass} onClick={cerrarMenu}>
                 Nuestras Tiendas
               </NavLink>
             </li>
-
             <li>
-              <NavLink
-                to="/quienes-somos"
-                className={navLinkClass}
-                onClick={cerrarMenu}
-              >
+              <NavLink to="/quienes-somos" className={navLinkClass} onClick={cerrarMenu}>
                 Quiénes Somos
               </NavLink>
             </li>
             <li>
               <NavLink
-                to="/inventario"
-                className={navLinkClass}
+                to="/carrito"
+                className={({ isActive }) =>
+                  `flex items-center gap-1.5 rounded-md px-3 py-2 font-semibold transition-colors ${
+                    isActive
+                      ? "bg-amber-400 text-slate-900"
+                      : "bg-emerald-600 text-white hover:bg-emerald-700"
+                  }`
+                }
                 onClick={cerrarMenu}
               >
-                Inventario
-              </NavLink>
-            </li>
-
-            <li>
-              <NavLink
-                to="/agregar-producto"
-                className={navLinkClass}
-                onClick={cerrarMenu}
-              >
-                Agregar Producto
+                <span>🛒 Carrito</span>
+                {totalEnCarrito > 0 && (
+                  <span className="rounded-full bg-slate-900 px-2 py-0.5 text-xs text-white">
+                    {totalEnCarrito}
+                  </span>
+                )}
               </NavLink>
             </li>
           </ul>

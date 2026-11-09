@@ -1,4 +1,3 @@
-// src/pages/Home.jsx
 import HeroCard from "../components/HeroCard";
 import ProductTable from "../components/ProductTable";
 import useInventario from "../hooks/useInventario";

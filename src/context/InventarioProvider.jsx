@@ -1,11 +1,17 @@
-// src/context/InventarioProvider.jsx
-import { useState } from "react";
+import { useReducer } from "react";
 import InventarioContext from "./InventarioContext";
 import { productos as productosIniciales } from "../data/productos";
+import {
+  inventarioReducer,
+  crearEstadoInicial,
+  TIPOS_ACCION,
+} from "./inventarioReducer";
 
 function InventarioProvider({ children }) {
-  const [productos, setProductos] = useState(() =>
-    productosIniciales.map((producto) => ({ ...producto }))
+  const [estado, dispatch] = useReducer(
+    inventarioReducer,
+    productosIniciales,
+    crearEstadoInicial
   );
 
   const agregarProducto = (datos) => {
@@ -16,17 +22,52 @@ function InventarioProvider({ children }) {
       precio: Number(datos.precio),
     };
 
-    setProductos((anteriores) => [nuevoProducto, ...anteriores]);
+    dispatch({
+      type: TIPOS_ACCION.AGREGAR_PRODUCTO,
+      producto: nuevoProducto,
+    });
   };
 
-  const eliminarProducto = (id) => {
-    setProductos((anteriores) => anteriores.filter((p) => p.id !== id));
+  const eliminarProducto = (productoId) => {
+    dispatch({
+      type: TIPOS_ACCION.ELIMINAR_PRODUCTO,
+      productoId,
+    });
+  };
+
+  const agregarAlCarrito = (productoId) => {
+    dispatch({
+      type: TIPOS_ACCION.AGREGAR_AL_CARRITO,
+      productoId,
+    });
+  };
+
+  const disminuirCantidadCarrito = (productoId) => {
+    dispatch({
+      type: TIPOS_ACCION.DISMINUIR_CANTIDAD_CARRITO,
+      productoId,
+    });
+  };
+
+  const eliminarDelCarrito = (productoId) => {
+    dispatch({
+      type: TIPOS_ACCION.ELIMINAR_DEL_CARRITO,
+      productoId,
+    });
+  };
+
+  const valor = {
+    productos: estado.productos,
+    carrito: estado.carrito,
+    agregarProducto,
+    eliminarProducto,
+    agregarAlCarrito,
+    disminuirCantidadCarrito,
+    eliminarDelCarrito,
   };
 
   return (
-    <InventarioContext.Provider
-      value={{ productos, agregarProducto, eliminarProducto }}
-    >
+    <InventarioContext.Provider value={valor}>
       {children}
     </InventarioContext.Provider>
   );

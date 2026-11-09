@@ -1,4 +1,3 @@
-// src/pages/NuestrasTiendas.jsx
 import { tiendas } from "../data/tiendas";
 
 function NuestrasTiendas() {
@@ -18,9 +17,9 @@ function NuestrasTiendas() {
               <h2 className="mb-4 text-xl font-bold text-slate-800">
                 {tienda.ciudad}
               </h2>
-              <p className="mb-3 text-slate-600">📍 {tienda.direccion}</p>
+              <p className="mb-3 text-slate-600"> {tienda.direccion}</p>
               <p className="text-slate-600">
-                🕒 <strong>Horario:</strong> {tienda.horario}
+                 <strong>Horario:</strong> {tienda.horario}
               </p>
             </div>
 

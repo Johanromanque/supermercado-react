@@ -1,4 +1,3 @@
-
 # Supermercado React — Mi Mercado
 
 Proyecto académico desarrollado para la asignatura

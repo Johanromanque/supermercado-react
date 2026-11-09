@@ -1,53 +1,67 @@
-function ProductRow({ producto }) {
+import { formatCLP } from "../utils/formatters";
+
+function ProductRow({ producto, mostrarAcciones = true, onEliminar }) {
   const stockBajo = producto.stock < 10;
 
-  return (
-    <tr className="border-b border-slate-200 odd:bg-white even:bg-slate-50 hover:bg-blue-50">
-      <td className="px-4 py-4 text-slate-600">{producto.id}</td>
+  const handleEliminar = () => {
+    const confirmacion = window.confirm(
+      `¿Estás seguro de que deseas eliminar "${producto.nombre}" del inventario?`
+    );
+    if (confirmacion && onEliminar) {
+      onEliminar(producto.id);
+    }
+  };
 
-      <td className="px-4 py-4 font-semibold text-slate-800">
+  return (
+    <tr className="border-b border-slate-200 transition-colors odd:bg-white even:bg-slate-50 hover:bg-blue-50/60">
+      {/* Nombre */}
+      <td className="px-4 py-3.5 font-semibold text-slate-800">
         {producto.nombre}
       </td>
 
-      <td className="px-4 py-4">
-        <span className="rounded-md bg-slate-200 px-3 py-1 text-xs font-semibold text-slate-700">
-          {producto.categoria}
+      {/* Marca (requerido explícitamente en la pauta) */}
+      <td className="px-4 py-3.5 text-slate-600">
+        {producto.marca}
+      </td>
+
+      {/* Tipo de producto */}
+      <td className="px-4 py-3.5">
+        <span className="rounded-md bg-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-700">
+          {producto.tipo}
         </span>
       </td>
 
-      <td className="px-4 py-4">
+      {/* Stock con indicador accesible */}
+      <td className="px-4 py-3.5">
         <span
-          className={`rounded-md px-3 py-1 text-xs font-semibold ${
+          className={`inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-semibold ${
             stockBajo
               ? "bg-rose-100 text-rose-800"
-              : "bg-cyan-100 text-cyan-900"
+              : "bg-emerald-100 text-emerald-800"
           }`}
         >
-          {producto.stock} un.
+          {producto.stock} un. {stockBajo && <span aria-label="Stock bajo">⚠️</span>}
         </span>
       </td>
 
-      <td className="px-4 py-4 font-bold text-emerald-700">
-        {producto.precio}
+      {/* Precio formateado dinámicamente desde número */}
+      <td className="px-4 py-3.5 font-bold text-emerald-700">
+        {formatCLP(producto.precio)}
       </td>
 
-      <td className="px-4 py-4 text-center">
-        <div className="flex justify-center gap-2">
+      {/* Acciones conectadas o removidas según la vista */}
+      {mostrarAcciones && (
+        <td className="px-4 py-3.5 text-center">
           <button
             type="button"
-            className="rounded-md border border-blue-600 px-3 py-1.5 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-600 hover:text-white"
-          >
-            Editar
-          </button>
-
-          <button
-            type="button"
-            className="rounded-md border border-red-600 px-3 py-1.5 text-sm font-medium text-red-700 transition-colors hover:bg-red-600 hover:text-white"
+            onClick={handleEliminar}
+            className="rounded-md border border-rose-300 bg-rose-50 px-3 py-1 text-xs font-medium text-rose-700 transition-colors hover:bg-rose-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-rose-400"
+            aria-label={`Eliminar producto ${producto.nombre}`}
           >
             Eliminar
           </button>
-        </div>
-      </td>
+        </td>
+      )}
     </tr>
   );
 }

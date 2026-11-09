@@ -1,7 +1,8 @@
-
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate, Link } from "react-router";
 import useInventario from "../hooks/useInventario";
+import FormField from "../components/FormField";
+import { validarFormularioProducto } from "../utils/validaciones";
 
 const valoresIniciales = {
   nombre: "",
@@ -13,137 +14,138 @@ const valoresIniciales = {
 
 function AgregarProducto() {
   const [formulario, setFormulario] = useState(valoresIniciales);
-  const [error, setError] = useState("");
+  const [errores, setErrores] = useState({});
+  const [mensajeExito, setMensajeExito] = useState(false);
   const { agregarProducto } = useInventario();
   const navigate = useNavigate();
 
-  // Actualiza el estado cuando el usuario escribe
+  // Referencia única al formulario para dirigir el foco accesible
+  const formRef = useRef(null);
+
   const manejarCambio = (evento) => {
     const { name, value } = evento.target;
+    setFormulario((prev) => ({ ...prev, [name]: value }));
 
-    setFormulario((anterior) => ({
-      ...anterior,
-      [name]: value,
-    }));
-
-    setError("");
+    // Si había un error en este campo, lo limpiamos al escribir
+    if (errores[name]) {
+      setErrores((prev) => ({ ...prev, [name]: undefined }));
+    }
   };
 
-  // Procesa el formulario
   const manejarEnvio = (evento) => {
     evento.preventDefault();
 
-    const nombre = formulario.nombre.trim();
-    const marca = formulario.marca.trim();
-    const stock = Number(formulario.stock);
-    const precio = Number(formulario.precio);
+    const { esValido, errores: erroresValidados } =
+      validarFormularioProducto(formulario);
 
-    // Validaciones
-    if (!nombre || !marca || !formulario.tipo ||
-        formulario.stock === "" || formulario.precio === "") {
-      setError("Debes completar todos los campos.");
+    if (!esValido) {
+      setErrores(erroresValidados);
+
+      // Accesibilidad: lleva el foco automáticamente al primer input con error
+      setTimeout(() => {
+        const primerInvalido = formRef.current?.querySelector(
+          '[aria-invalid="true"]',
+        );
+        if (primerInvalido) {
+          primerInvalido.focus();
+        }
+      }, 0);
       return;
     }
 
-    if (!Number.isInteger(stock) || stock < 0 || precio <= 0 ||
-        !Number.isFinite(precio)) {
-      setError("Ingresa un stock válido y un precio mayor que cero.");
-      return;
-    }
-
-    const nuevoProducto = {
-      nombre,
-      marca,
+    agregarProducto({
+      nombre: formulario.nombre.trim(),
+      marca: formulario.marca.trim(),
       tipo: formulario.tipo,
-      categoria: formulario.tipo,
-      stock,
-      precio: `$${precio.toLocaleString("es-CL")}`,
-    };
+      stock: Number(formulario.stock),
+      precio: Number(formulario.precio),
+    });
 
-    agregarProducto(nuevoProducto);
+    setMensajeExito(true);
 
-    // Regresamos al inicio para ver el nuevo producto
-    navigate("/");
+    setTimeout(() => {
+      navigate("/inventario");
+    }, 1200);
   };
 
-  const claseInput =
-    "w-full rounded-lg border border-slate-300 bg-white px-4 py-3 " +
-    "text-slate-800 outline-none focus:border-blue-600 " +
-    "focus:ring-2 focus:ring-blue-100";
+  const claseBaseInput = (tieneError) =>
+    `w-full rounded-lg border px-4 py-2.5 text-slate-800 transition-colors focus:ring-2 focus:outline-none ${
+      tieneError
+        ? "border-red-400 bg-red-50/30 focus:border-red-500 focus:ring-red-200"
+        : "border-slate-300 bg-white focus:border-blue-600 focus:ring-blue-100"
+    }`;
 
   return (
     <section className="mx-auto w-full max-w-3xl px-4 py-10">
       <div className="mb-8">
-        <h1 className="mb-3 text-3xl font-bold text-blue-800">
+        <h1 className="mb-2 text-3xl font-bold text-blue-800">
           Agregar Producto
         </h1>
-
         <p className="text-slate-600">
-          Completa el formulario para registrar un nuevo
-          artículo en el inventario del supermercado.
+          Registra un nuevo artículo completando los campos obligatorios.
         </p>
       </div>
 
+      {mensajeExito && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="mb-6 rounded-lg border border-emerald-300 bg-emerald-50 p-4 font-semibold text-emerald-800"
+        >
+          ✓ Producto guardado exitosamente. Redirigiendo al inventario...
+        </div>
+      )}
+
       <form
+        ref={formRef}
         onSubmit={manejarEnvio}
         noValidate
         className="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8"
       >
-        {error && (
-          <div
-            role="alert"
-            className="rounded-lg border border-red-300 bg-red-50 p-4 text-red-700"
-          >
-            {error}
-          </div>
-        )}
-
         {/* Nombre */}
-        <div>
-          <label htmlFor="nombre" className="mb-2 block font-semibold">
-            Nombre del producto
-          </label>
+        <FormField
+          id="nombre"
+          label="Nombre del producto"
+          error={errores.nombre}
+        >
           <input
             id="nombre"
             name="nombre"
             type="text"
-            placeholder="Ej: Arroz Grado 1 1kg"
+            placeholder="Ej: Fideos Spaghetti N°5"
             value={formulario.nombre}
             onChange={manejarCambio}
-            className={claseInput}
-            required
+            aria-invalid={Boolean(errores.nombre)}
+            aria-describedby={errores.nombre ? "nombre-error" : undefined}
+            className={claseBaseInput(Boolean(errores.nombre))}
           />
-        </div>
+        </FormField>
 
         {/* Marca */}
-        <div>
-          <label htmlFor="marca" className="mb-2 block font-semibold">
-            Marca
-          </label>
+        <FormField id="marca" label="Marca" error={errores.marca}>
           <input
             id="marca"
             name="marca"
             type="text"
-            placeholder="Ej: Tucapel"
+            placeholder="Ej: Lucchetti"
             value={formulario.marca}
             onChange={manejarCambio}
-            className={claseInput}
-            required
+            aria-invalid={Boolean(errores.marca)}
+            aria-describedby={errores.marca ? "marca-error" : undefined}
+            className={claseBaseInput(Boolean(errores.marca))}
           />
-        </div>
+        </FormField>
 
-        {/* Tipo de producto */}
-        <div>
-          <label htmlFor="tipo" className="mb-2 block font-semibold">
-            Tipo de producto
-          </label>
+        {/* Tipo / Categoría */}
+        <FormField id="tipo" label="Tipo de producto" error={errores.tipo}>
           <select
             id="tipo"
             name="tipo"
             value={formulario.tipo}
             onChange={manejarCambio}
-            className={claseInput}
-            required
+            aria-invalid={Boolean(errores.tipo)}
+            aria-describedby={errores.tipo ? "tipo-error" : undefined}
+            className={claseBaseInput(Boolean(errores.tipo))}
           >
             <option value="">Selecciona una categoría</option>
             <option value="Abarrotes">Abarrotes</option>
@@ -153,59 +155,57 @@ function AgregarProducto() {
             <option value="Frutas y verduras">Frutas y verduras</option>
             <option value="Otros">Otros</option>
           </select>
-        </div>
+        </FormField>
 
-        {/* Stock y precio */}
+        {/* Stock y Precio */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          <div>
-            <label htmlFor="stock" className="mb-2 block font-semibold">
-              Stock disponible
-            </label>
+          <FormField id="stock" label="Stock disponible" error={errores.stock}>
             <input
               id="stock"
               name="stock"
               type="number"
               min="0"
               step="1"
-              placeholder="Ej: 25"
+              placeholder="Ej: 20"
               value={formulario.stock}
               onChange={manejarCambio}
-              className={claseInput}
-              required
+              aria-invalid={Boolean(errores.stock)}
+              aria-describedby={errores.stock ? "stock-error" : undefined}
+              className={claseBaseInput(Boolean(errores.stock))}
             />
-          </div>
+          </FormField>
 
-          <div>
-            <label htmlFor="precio" className="mb-2 block font-semibold">
-              Precio (CLP)
-            </label>
+          <FormField
+            id="precio"
+            label="Precio unitario (CLP)"
+            error={errores.precio}
+          >
             <input
               id="precio"
               name="precio"
               type="number"
               min="1"
               step="1"
-              placeholder="Ej: 1590"
+              placeholder="Ej: 1190"
               value={formulario.precio}
               onChange={manejarCambio}
-              className={claseInput}
-              required
+              aria-invalid={Boolean(errores.precio)}
+              aria-describedby={errores.precio ? "precio-error" : undefined}
+              className={claseBaseInput(Boolean(errores.precio))}
             />
-          </div>
+          </FormField>
         </div>
 
-        {/* Acciones */}
         <div className="flex flex-wrap gap-3 border-t border-slate-200 pt-6">
           <button
             type="submit"
-            className="rounded-lg bg-emerald-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-emerald-700"
+            className="rounded-lg bg-emerald-600 px-6 py-2.5 font-semibold text-white transition-colors hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
             Guardar Producto
           </button>
-
           <Link
-            to="/"
-            className="rounded-lg border border-slate-300 px-6 py-3 font-semibold text-slate-700 no-underline hover:bg-slate-100"
+            to="/inventario"
+            className="rounded-lg border border-slate-300 px-6 py-2.5 font-semibold text-slate-700 no-underline hover:bg-slate-100"
           >
             Cancelar
           </Link>
